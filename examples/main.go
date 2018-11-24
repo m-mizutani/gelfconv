@@ -22,11 +22,7 @@ func example1() {
 
 	msg := gelfconv.NewMessage("test message")
 	msg.SetData(log)
-	rawGELF, err := msg.Gelf()
-	if err != nil {
-		fmt.Errorf("convert error %v", err)
-	}
-
+	rawGELF, _ := msg.Gelf()
 	fmt.Println(string(rawGELF))
 }
 
