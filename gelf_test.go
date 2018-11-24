@@ -2,6 +2,7 @@ package gelfconv_test
 
 import (
 	"encoding/json"
+	"fmt"
 	"testing"
 
 	"github.com/m-mizutani/gelfconv"
@@ -116,4 +117,28 @@ func TestSetJSON(t *testing.T) {
 	v2, ok := vmap["_k2"].(float64)
 	require.Equal(t, true, ok)
 	require.Equal(t, 5.0, v2)
+}
+
+func Example() {
+	type LogData struct {
+		IPAddr  string `json:"ipaddr"`
+		Port    int    `json:"port"`
+		Request string `json:"request"`
+	}
+	log := LogData{"10.1.2.3", 51234, "GET xxx"}
+
+	msg := gelfconv.NewMessage("test message")
+	msg.SetData(log)
+	rawData, err := msg.Gelf()
+	if err != nil {
+		fmt.Errorf("convert error %v", err)
+	}
+
+	fmt.Println(string(rawData))
+	// Output:
+	// {}
+}
+
+func ExampleMessage_SetJSON() {
+
 }
