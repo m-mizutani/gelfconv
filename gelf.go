@@ -48,7 +48,7 @@ func (x *Message) SetData(v interface{}) {
 	x.data = v
 }
 
-// SetJSON is setter of GELF additonal fields for encoded data in JSON
+// SetJSON is setter of GELF additional fields for encoded data in JSON
 func (x *Message) SetJSON(jdata []byte) error {
 	var v interface{}
 	err := json.Unmarshal(jdata, &v)

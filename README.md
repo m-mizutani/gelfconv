@@ -1,1 +1,1 @@
-# gelfconv
+# gelfconv  [![Travis-CI](https://travis-ci.org/m-mizutani/gelfconv.svg)](https://travis-ci.org/m-mizutani/gelfconv) [![Report card](https://goreportcard.com/badge/github.com/m-mizutani/gelfconv)](https://goreportcard.com/report/github.com/m-mizutani/gelfconv) 
