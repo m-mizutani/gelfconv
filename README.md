@@ -1,6 +1,6 @@
 # gelfconv  [![Travis-CI](https://travis-ci.org/m-mizutani/gelfconv.svg)](https://travis-ci.org/m-mizutani/gelfconv) [![Report card](https://goreportcard.com/badge/github.com/m-mizutani/gelfconv)](https://goreportcard.com/report/github.com/m-mizutani/gelfconv) 
 
-`gelfconv` is a converter of [GELF (Graylog Extended Log Format)](http://docs.graylog.org/en/latest/pages/gelf.html). Graylog allows a log provider to send logs as not only HTTP and syslog but also TCP/UDP + GELF. TCP/UDP + GELF is lower overhead than HTTP and can handle structured data. GELF is based on JSON, but it has several additional rules.
+`gelfconv` is a converter of [GELF (Graylog Extended Log Format)](http://docs.graylog.org/en/latest/pages/gelf.html). Graylog allows a log provider to send logs as not only HTTP and syslog but also TCP/UDP + GELF. TCP/UDP + GELF is lower overhead than HTTP and can handle structured data. GELF is based on JSON, but it has several additional rules.
 
 - Several fields are mandatry.
 - Do not allow nested data structure.
