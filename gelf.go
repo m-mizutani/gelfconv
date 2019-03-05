@@ -86,7 +86,13 @@ func (x *Message) Gelf() ([]byte, error) {
 		if kv.key == "" {
 			v["_value"] = kv.value
 		} else {
-			v[kv.key] = kv.value
+			key := kv.key
+			if key == "_version" || key == "_host" || key == "_short_message" ||
+				key == "_timestamp" || key == "_full_message" || key == "_level" {
+				key = "_" + key
+			}
+
+			v[key] = kv.value
 		}
 	}
 
