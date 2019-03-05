@@ -141,17 +141,27 @@ func toKeyValuePairs(v interface{}, keyPrefix string) []keyValuePair {
 		return kvList
 
 	case reflect.Struct:
-		jdata, err := json.Marshal(v)
-		if err != nil {
-			return []keyValuePair{}
-		}
-		var vdata interface{}
-		err = json.Unmarshal(jdata, &vdata)
-		if err != nil {
-			return []keyValuePair{}
+		t := value.Type()
+		var pList []keyValuePair
+
+		for i := 0; i < t.NumField(); i++ {
+			f := t.Field(i)
+			vdata := value.FieldByName(f.Name)
+			if !vdata.CanInterface() {
+				continue
+			}
+
+			jsonTag := f.Tag.Get("json")
+
+			fname := f.Name
+			if jsonTag != "" {
+				fname = jsonTag
+			}
+			newKeyPrefix := fmt.Sprintf("%s_%s", keyPrefix, fname)
+			pList = append(pList, toKeyValuePairs(vdata.Interface(), newKeyPrefix)...)
 		}
 
-		return toKeyValuePairs(vdata, keyPrefix)
+		return pList
 
 	case reflect.Array, reflect.Slice:
 		raw, err := json.Marshal(v)
