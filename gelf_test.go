@@ -105,6 +105,34 @@ func TestStruct(t *testing.T) {
 	require.Equal(t, "", v4)
 }
 
+func TestAddrOfStruct(t *testing.T) {
+	type sample struct {
+		Str      string `json:"str"`
+		Integer  int    `json:"integer"`
+		NoTag    string
+		noExport string
+	}
+
+	s := sample{"blue", 5, "no_name", "omg"}
+	vmap := toMap(t, &s)
+
+	v1, ok := vmap["_str"].(string)
+	require.Equal(t, true, ok)
+	require.Equal(t, "blue", v1)
+
+	v2, ok := vmap["_integer"].(float64)
+	require.Equal(t, true, ok)
+	require.Equal(t, 5.0, v2)
+
+	v3, ok := vmap["_NoTag"].(string)
+	require.Equal(t, true, ok)
+	require.Equal(t, "no_name", v3)
+
+	v4, ok := vmap["_noExport"].(string)
+	require.Equal(t, false, ok)
+	require.Equal(t, "", v4)
+}
+
 func TestSetJSON(t *testing.T) {
 	jdata := []byte(`{"k1": "blue", "k2": 5}`)
 	m := gelfconv.NewMessage("test")

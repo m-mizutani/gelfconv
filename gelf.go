@@ -170,6 +170,9 @@ func toKeyValuePairs(v interface{}, keyPrefix string) []keyValuePair {
 		}
 		return []keyValuePair{{keyPrefix, string(raw)}}
 
+	case reflect.Ptr, reflect.UnsafePointer:
+		return toKeyValuePairs(value.Elem().Interface(), keyPrefix)
+
 	default: // will be ignored
 		// Expected:
 		// reflect.Chan, reflect.Interface, reflect.Ptr, reflect.Func,
