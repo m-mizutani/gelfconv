@@ -117,3 +117,44 @@ func TestSetJSON(t *testing.T) {
 	require.Equal(t, true, ok)
 	require.Equal(t, 5.0, v2)
 }
+
+func TestAddField(t *testing.T) {
+	data := map[string]interface{}{
+		"color": "red",
+		"count": "four",
+	}
+	m := gelfconv.NewMessage("five")
+	m.SetData(data)
+	m.AddField("color", "orange")
+	m.AddField("color2", "blue")
+	raw, err := m.Gelf()
+
+	assert.NoError(t, err)
+	assert.NotEqual(t, 0, len(raw))
+	assert.Equal(t, uint8(0), raw[len(raw)-1])
+
+	jdata := raw[0 : len(raw)-1]
+	var v map[string]interface{}
+	err = json.Unmarshal(jdata, &v)
+	require.NoError(t, err)
+
+	v0, ok := v["short_message"].(string)
+	assert.Equal(t, true, ok)
+	assert.Equal(t, "five", v0)
+
+	// Overwrite existing key
+	v1, ok := v["_color"].(string)
+	assert.Equal(t, true, ok)
+	assert.Equal(t, "orange", v1)
+
+	// Add a new key
+	v2, ok := v["_color2"].(string)
+	assert.Equal(t, true, ok)
+	assert.Equal(t, "blue", v2)
+
+	// Not changed
+	v3, ok := v["_count"].(string)
+	assert.Equal(t, true, ok)
+	assert.Equal(t, "four", v3)
+
+}

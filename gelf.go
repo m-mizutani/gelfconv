@@ -25,8 +25,8 @@ func updateDefaultHostname() {
 
 // Message is a structure to store GELF metadata and log values.
 type Message struct {
-	data interface{}
-
+	data         interface{}
+	kvList       []keyValuePair
 	Host         string
 	ShortMessage string
 	FullMessage  string
@@ -60,6 +60,11 @@ func (x *Message) SetJSON(jdata []byte) error {
 	return nil
 }
 
+// AddField adds additional pair of key and value. The pair will overwrite key from .data
+func (x *Message) AddField(key string, value interface{}) {
+	x.kvList = append(x.kvList, keyValuePair{key, value})
+}
+
 // Gelf returns GELF encoded byte data
 func (x *Message) Gelf() ([]byte, error) {
 	v := map[string]interface{}{
@@ -83,6 +88,10 @@ func (x *Message) Gelf() ([]byte, error) {
 		} else {
 			v[kv.key] = kv.value
 		}
+	}
+
+	for _, kv := range x.kvList {
+		v["_"+kv.key] = kv.value
 	}
 
 	d, err := json.Marshal(v)
