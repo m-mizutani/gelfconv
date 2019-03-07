@@ -104,7 +104,7 @@ func (x *Message) Gelf() ([]byte, error) {
 	if err != nil {
 		return []byte{}, err
 	}
-	d = append(d, 0)
+
 	return d, nil
 }
 
