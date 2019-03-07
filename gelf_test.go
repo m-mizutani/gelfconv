@@ -23,9 +23,9 @@ func Test(t *testing.T) {
 
 	assert.NoError(t, err)
 	assert.NotEqual(t, 0, len(raw))
-	assert.Equal(t, uint8(0), raw[len(raw)-1])
+	assert.NotEqual(t, uint8(0), raw[len(raw)-1])
 
-	jdata := raw[0 : len(raw)-1]
+	jdata := raw
 	var v map[string]interface{}
 	err = json.Unmarshal(jdata, &v)
 	require.NoError(t, err)
@@ -49,7 +49,7 @@ func toMap(t *testing.T, v interface{}) map[string]interface{} {
 	raw, err := m.Gelf()
 
 	require.NoError(t, err)
-	jdata := raw[0 : len(raw)-1]
+	jdata := raw
 
 	var vmap map[string]interface{}
 	err = json.Unmarshal(jdata, &vmap)
@@ -141,7 +141,7 @@ func TestSetJSON(t *testing.T) {
 	require.NoError(t, err)
 	raw, err := m.Gelf()
 	require.NoError(t, err)
-	jdata2 := raw[0 : len(raw)-1]
+	jdata2 := raw
 
 	var vmap map[string]interface{}
 	err = json.Unmarshal(jdata2, &vmap)
@@ -169,11 +169,10 @@ func TestAddField(t *testing.T) {
 
 	assert.NoError(t, err)
 	assert.NotEqual(t, 0, len(raw))
-	assert.Equal(t, uint8(0), raw[len(raw)-1])
+	assert.NotEqual(t, uint8(0), raw[len(raw)-1])
 
-	jdata := raw[0 : len(raw)-1]
 	var v map[string]interface{}
-	err = json.Unmarshal(jdata, &v)
+	err = json.Unmarshal(raw, &v)
 	require.NoError(t, err)
 
 	v0, ok := v["short_message"].(string)
