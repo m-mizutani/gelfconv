@@ -94,7 +94,7 @@ func (x *Message) Gelf() ([]byte, error) {
 				key = "_" + key
 			}
 
-			v[key] = kv.value
+			v[normalizeKey(key)] = kv.value
 		}
 	}
 
@@ -108,6 +108,19 @@ func (x *Message) Gelf() ([]byte, error) {
 	}
 
 	return d, nil
+}
+
+func normalizeKey(key string) string {
+	var newKey string
+	for _, r := range key {
+		if (r < 'a' || r > 'z') && (r < 'A' || r > 'Z') && (r < '0' || '9' < r) && r != '_' {
+			newKey += "_"
+		} else {
+			newKey += string(r)
+		}
+	}
+
+	return newKey
 }
 
 func toKeyStringPairs(v interface{}, key string) []keyValuePair {

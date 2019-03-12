@@ -241,3 +241,21 @@ func TestDeepNestedData(t *testing.T) {
 	assert.True(t, ok)
 	assert.True(t, strings.Index(v, "five") >= 0)
 }
+
+func TestNormallzeKey(t *testing.T) {
+	data := map[string]interface{}{
+		"p 6": "rnd",
+		"p@7": "urk",
+	}
+
+	vmap := toMap(t, data)
+	_, ok := vmap["_p 6"]
+	assert.False(t, ok)
+	_, ok = vmap["_p_6"]
+	assert.True(t, ok)
+
+	_, ok = vmap["_p@7"]
+	assert.False(t, ok)
+	_, ok = vmap["_p_7"]
+	assert.True(t, ok)
+}
