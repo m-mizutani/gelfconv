@@ -199,8 +199,7 @@ func TestAddField(t *testing.T) {
 
 func TestReservedKey(t *testing.T) {
 	data := map[string]interface{}{
-		"timestamp": "red",
-		"id":        "four",
+		"timestamp": 12345,
 	}
 	m := gelfconv.NewMessage("five")
 	m.SetData(data)
@@ -213,13 +212,13 @@ func TestReservedKey(t *testing.T) {
 	err = json.Unmarshal(raw, &v)
 	require.NoError(t, err)
 
-	_, ok := v["_id"]
+	_, ok := v["_timestamp"]
 	assert.False(t, ok)
-	v1, ok := v["_@id"]
+	v1, ok := v["__timestamp"]
 	assert.True(t, ok)
-	s1, ok := v1.(string)
+	i1, ok := v1.(float64)
 	assert.True(t, ok)
-	assert.Equal(t, "four", s1)
+	assert.Equal(t, 12345.0, i1)
 }
 
 func TestDeepNestedData(t *testing.T) {
