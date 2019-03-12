@@ -20,12 +20,7 @@ func (x *Encoder) Write(msg Message) error {
 	if err != nil {
 		return err
 	}
-
-	if x.msgCount > 0 {
-		if _, err := x.writer.Write([]byte{0}); err != nil {
-			return err
-		}
-	}
+	raw = append(raw, 0)
 
 	for p := 0; p < len(raw); {
 		if n, err := x.writer.Write(raw[p:len(raw)]); err != nil {

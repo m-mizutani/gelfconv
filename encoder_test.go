@@ -26,7 +26,7 @@ func TestEncoderSingleMessage(t *testing.T) {
 	raw := buf.Bytes()
 	require.NotEqual(t, 0, len(raw))
 	assert.NotEqual(t, -1, bytes.Index(raw, []byte("k1")))
-	assert.Equal(t, -1, bytes.Index(raw, []byte{0}))
+	assert.NotEqual(t, -1, bytes.Index(raw, []byte{0}))
 }
 
 func TestEncoderMultipleMessage(t *testing.T) {
