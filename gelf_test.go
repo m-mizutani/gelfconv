@@ -2,6 +2,7 @@ package gelfconv_test
 
 import (
 	"encoding/json"
+	"strings"
 	"testing"
 
 	"github.com/m-mizutani/gelfconv"
@@ -219,4 +220,25 @@ func TestReservedKey(t *testing.T) {
 	s1, ok := v1.(string)
 	assert.True(t, ok)
 	assert.Equal(t, "four", s1)
+}
+
+func TestDeepNestedData(t *testing.T) {
+	data := map[string]interface{}{
+		"d1": map[string]interface{}{
+			"d2": map[string]interface{}{
+				"d3": map[string]interface{}{
+					"d4": map[string]interface{}{
+						"d5": "five",
+					},
+				},
+			},
+		},
+	}
+
+	vmap := toMap(t, data)
+	_, ok := vmap["_d1_d2_d3_d4"]
+	assert.False(t, ok)
+	v, ok := vmap["_d1_d2_d3"].(string)
+	assert.True(t, ok)
+	assert.True(t, strings.Index(v, "five") >= 0)
 }

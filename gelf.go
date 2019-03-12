@@ -11,6 +11,7 @@ import (
 )
 
 var defaultHostname string
+var recursiveLimit = 3
 
 func init() {
 	updateDefaultHostname()
@@ -81,7 +82,7 @@ func (x *Message) Gelf() ([]byte, error) {
 		v["level"] = x.Level
 	}
 
-	kvList := toKeyValuePairs(x.data, "")
+	kvList := toKeyValuePairs(x.data, "", 0)
 	for _, kv := range kvList {
 		if kv.key == "" {
 			v["_value"] = kv.value
@@ -89,7 +90,7 @@ func (x *Message) Gelf() ([]byte, error) {
 			key := kv.key
 			if key == "_version" || key == "_host" || key == "_short_message" ||
 				key == "_timestamp" || key == "_full_message" || key == "_level" ||
-				key == "_message" || key == "_id" {
+				key == "_message" {
 				key = "_@" + kv.key[1:]
 			}
 
@@ -109,7 +110,16 @@ func (x *Message) Gelf() ([]byte, error) {
 	return d, nil
 }
 
-func toKeyValuePairs(v interface{}, keyPrefix string) []keyValuePair {
+func toKeyStringPairs(v interface{}, key string) []keyValuePair {
+	raw, err := json.Marshal(v)
+	if err != nil {
+		return []keyValuePair{}
+	}
+	return []keyValuePair{{key, string(raw)}}
+
+}
+
+func toKeyValuePairs(v interface{}, keyPrefix string, depth int) []keyValuePair {
 	value := reflect.ValueOf(v)
 
 	switch value.Kind() {
@@ -131,17 +141,25 @@ func toKeyValuePairs(v interface{}, keyPrefix string) []keyValuePair {
 		return []keyValuePair{{keyPrefix, v}}
 
 	case reflect.Map:
+		if depth >= recursiveLimit {
+			return toKeyStringPairs(v, keyPrefix)
+		}
+
 		var kvList []keyValuePair
 
 		keys := value.MapKeys()
 		for i := 0; i < value.Len(); i++ {
 			mValue := value.MapIndex(keys[i])
 			key := fmt.Sprintf("%s_%s", keyPrefix, keys[i])
-			kvList = append(kvList, toKeyValuePairs(mValue.Interface(), key)...)
+			kvList = append(kvList, toKeyValuePairs(mValue.Interface(), key, depth+1)...)
 		}
 		return kvList
 
 	case reflect.Struct:
+		if depth >= recursiveLimit {
+			return toKeyStringPairs(v, keyPrefix)
+		}
+
 		t := value.Type()
 		var pList []keyValuePair
 
@@ -159,20 +177,16 @@ func toKeyValuePairs(v interface{}, keyPrefix string) []keyValuePair {
 				fname = jsonTag
 			}
 			newKeyPrefix := fmt.Sprintf("%s_%s", keyPrefix, fname)
-			pList = append(pList, toKeyValuePairs(vdata.Interface(), newKeyPrefix)...)
+			pList = append(pList, toKeyValuePairs(vdata.Interface(), newKeyPrefix, depth+1)...)
 		}
 
 		return pList
 
 	case reflect.Array, reflect.Slice:
-		raw, err := json.Marshal(v)
-		if err != nil {
-			return []keyValuePair{}
-		}
-		return []keyValuePair{{keyPrefix, string(raw)}}
+		return toKeyStringPairs(v, keyPrefix)
 
 	case reflect.Ptr, reflect.UnsafePointer:
-		return toKeyValuePairs(value.Elem().Interface(), keyPrefix)
+		return toKeyValuePairs(value.Elem().Interface(), keyPrefix, depth)
 
 	default: // will be ignored
 		// Expected:
