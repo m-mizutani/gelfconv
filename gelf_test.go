@@ -195,3 +195,28 @@ func TestAddField(t *testing.T) {
 	assert.Equal(t, "four", v3)
 
 }
+
+func TestReservedKey(t *testing.T) {
+	data := map[string]interface{}{
+		"timestamp": "red",
+		"id":        "four",
+	}
+	m := gelfconv.NewMessage("five")
+	m.SetData(data)
+	raw, err := m.Gelf()
+
+	assert.NoError(t, err)
+	assert.NotEqual(t, 0, len(raw))
+
+	var v map[string]interface{}
+	err = json.Unmarshal(raw, &v)
+	require.NoError(t, err)
+
+	_, ok := v["_id"]
+	assert.False(t, ok)
+	v1, ok := v["_@id"]
+	assert.True(t, ok)
+	s1, ok := v1.(string)
+	assert.True(t, ok)
+	assert.Equal(t, "four", s1)
+}
