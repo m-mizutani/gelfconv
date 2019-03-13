@@ -113,7 +113,7 @@ func (x *Message) Gelf() ([]byte, error) {
 func normalizeKey(key string) string {
 	var newKey string
 	for _, r := range key {
-		if (r < 'a' || r > 'z') && (r < 'A' || r > 'Z') && (r < '0' || '9' < r) && r != '_' {
+		if (r < 'a' || r > 'z') && (r < 'A' || r > 'Z') && (r < '0' || '9' < r) && r != '@' {
 			newKey += "_"
 		} else {
 			newKey += string(r)
