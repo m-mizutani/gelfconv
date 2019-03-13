@@ -242,6 +242,35 @@ func TestDeepNestedData(t *testing.T) {
 	assert.True(t, strings.Index(v, "five") >= 0)
 }
 
+func TestChangeRecursiveLimit(t *testing.T) {
+	old := gelfconv.RecursiveLimit
+	gelfconv.RecursiveLimit = 2
+	defer func() {
+		gelfconv.RecursiveLimit = old
+	}()
+
+	require.NotEqual(t, old, gelfconv.RecursiveLimit)
+
+	data := map[string]interface{}{
+		"d1": map[string]interface{}{
+			"d2": map[string]interface{}{
+				"d3": map[string]interface{}{
+					"d4": map[string]interface{}{
+						"d5": "five",
+					},
+				},
+			},
+		},
+	}
+
+	vmap := toMap(t, data)
+	_, ok := vmap["_d1_d2_d3"]
+	assert.False(t, ok)
+	v, ok := vmap["_d1_d2"].(string)
+	assert.True(t, ok)
+	assert.True(t, strings.Index(v, "five") >= 0)
+}
+
 func TestNormallzeKey(t *testing.T) {
 	data := map[string]interface{}{
 		"p 6": "rnd",

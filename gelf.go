@@ -10,8 +10,10 @@ import (
 	"github.com/pkg/errors"
 )
 
+// RecursiveLimit is limitation of recursive flatten of struct and map object.
+var RecursiveLimit = 3
+
 var defaultHostname string
-var recursiveLimit = 3
 
 func init() {
 	updateDefaultHostname()
@@ -154,7 +156,7 @@ func toKeyValuePairs(v interface{}, keyPrefix string, depth int) []keyValuePair 
 		return []keyValuePair{{keyPrefix, v}}
 
 	case reflect.Map:
-		if depth >= recursiveLimit {
+		if depth >= RecursiveLimit {
 			return toKeyStringPairs(v, keyPrefix)
 		}
 
@@ -169,7 +171,7 @@ func toKeyValuePairs(v interface{}, keyPrefix string, depth int) []keyValuePair 
 		return kvList
 
 	case reflect.Struct:
-		if depth >= recursiveLimit {
+		if depth >= RecursiveLimit {
 			return toKeyStringPairs(v, keyPrefix)
 		}
 
