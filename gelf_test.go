@@ -214,7 +214,7 @@ func TestReservedKey(t *testing.T) {
 
 	_, ok := v["_timestamp"]
 	assert.False(t, ok)
-	v1, ok := v["__timestamp"]
+	v1, ok := v["___timestamp"]
 	assert.True(t, ok)
 	i1, ok := v1.(float64)
 	assert.True(t, ok)
