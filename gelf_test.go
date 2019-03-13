@@ -41,7 +41,7 @@ func Test(t *testing.T) {
 
 	v2, ok := v["_k4"].(string)
 	assert.Equal(t, true, ok)
-	assert.Equal(t, "[1,2,3]", v2)
+	assert.Equal(t, "[\n  1,\n  2,\n  3\n  ]", v2)
 }
 
 func toMap(t *testing.T, v interface{}) map[string]interface{} {
@@ -245,7 +245,7 @@ func TestDeepNestedData(t *testing.T) {
 func TestNormallzeKey(t *testing.T) {
 	data := map[string]interface{}{
 		"p 6": "rnd",
-		"p@7": "urk",
+		"p&7": "urk",
 	}
 
 	vmap := toMap(t, data)
@@ -254,7 +254,7 @@ func TestNormallzeKey(t *testing.T) {
 	_, ok = vmap["_p_6"]
 	assert.True(t, ok)
 
-	_, ok = vmap["_p@7"]
+	_, ok = vmap["_p&7"]
 	assert.False(t, ok)
 	_, ok = vmap["_p_7"]
 	assert.True(t, ok)

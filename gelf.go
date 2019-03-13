@@ -124,7 +124,7 @@ func normalizeKey(key string) string {
 }
 
 func toKeyStringPairs(v interface{}, key string) []keyValuePair {
-	raw, err := json.Marshal(v)
+	raw, err := json.MarshalIndent(v, "  ", "")
 	if err != nil {
 		return []keyValuePair{}
 	}
