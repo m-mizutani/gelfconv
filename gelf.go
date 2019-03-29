@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 	"reflect"
+	"strings"
 	"time"
 
 	"github.com/pkg/errors"
@@ -152,7 +153,21 @@ func toKeyValuePairs(v interface{}, keyPrefix string, depth int) []keyValuePair 
 	case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64,
 		reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64,
 		reflect.Uintptr, reflect.Complex64, reflect.Complex128,
-		reflect.Float32, reflect.Float64, reflect.String:
+		reflect.Float32, reflect.Float64:
+		return []keyValuePair{{keyPrefix, v}}
+
+	case reflect.String:
+		if arr := strings.Split(keyPrefix, ","); len(arr) > 1 {
+			for _, tag := range arr[1:len(arr)] {
+				s, _ := v.(string)
+				if tag == "omitempty" && s == "" {
+					return []keyValuePair{} // returns empty list.
+				}
+			}
+
+			return []keyValuePair{{arr[0], v}}
+		}
+
 		return []keyValuePair{{keyPrefix, v}}
 
 	case reflect.Map:

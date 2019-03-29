@@ -288,3 +288,19 @@ func TestNormallzeKey(t *testing.T) {
 	_, ok = vmap["_p_7"]
 	assert.True(t, ok)
 }
+
+func TestJSONOmitEmptyTag(t *testing.T) {
+	type sample struct {
+		Str1 string `json:"str1,omitempty"`
+		Str2 string `json:"str2,omitempty"`
+	}
+
+	s := sample{Str2: "ok"}
+	vmap := toMap(t, &s)
+
+	_, ok := vmap["_str1"].(string)
+	require.False(t, ok)
+	v1, ok := vmap["_str2"].(string)
+	require.True(t, ok)
+	assert.Equal(t, "ok", v1)
+}
